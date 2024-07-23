@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Song } from "./Song.entity";
 
 @Entity()
 export class Performer {
@@ -8,6 +9,7 @@ export class Performer {
     @Column()
     Name: string;
 
-    @Column("text")
-    Bio: string;
+    
+    @OneToMany(() => Song, song => song.Performer)
+    songs: Song[];
 }

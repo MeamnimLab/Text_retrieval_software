@@ -14,9 +14,6 @@ export class SongWords {
     WordID: Word;
 
     @Column()
-    Stanza: number;
-
-    @Column()
     Line: number;
 
     @Column()

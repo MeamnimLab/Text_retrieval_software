@@ -1,6 +1,6 @@
 // src/database.ts
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityTarget, Repository } from 'typeorm';
 import path from 'path';
 
 const host = 'localhost'; 
@@ -23,6 +23,13 @@ export class Database {
     return Database.instance;
   }
 
+  public async getRepository<T>(entityClass: EntityTarget<T>): Promise<Repository<T>> {
+    if (!this.dataSource) {
+      await this.connect();
+    }
+    return this.dataSource.getRepository(entityClass);
+  }
+
   public async connect(): Promise<void> {
     if (this.dataSource) {
       return;
@@ -36,9 +43,9 @@ export class Database {
       password: password,
       database: database,
       synchronize: true,
-      logging: false,
+      logging: logging,
       ssl: ssl,
-      entities: [path.join(__dirname, '../entity/*.ts')],
+      entities: [path.join(__dirname, './entity/*.entity{.ts,.js}')],
       migrations: [],
       subscribers: []
     });

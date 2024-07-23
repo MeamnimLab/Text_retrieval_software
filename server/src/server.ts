@@ -1,22 +1,24 @@
-// src/server.ts
 import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
-import { Database } from './database';  // Import the Database class
+import { Database } from './database';
+import { routesInit } from './routes/config.routes'; // Ensure correct path
 
 export const app = express();
 export const port = 3000;
 
-export const initializeMiddlewares = () => {
-  app.use(express.json());
-  app.use(cors());
-};
+// Middleware to parse JSON bodies and enable CORS
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 export const startServer = async () => {
   try {
     const db = await Database.getInstance();
-    await db.connect(); 
-    initializeMiddlewares();
+    await db.connect();
+
+    // Initialize routes
+    routesInit(app);
 
     app.listen(port, () => {
       console.log(`🚀 App listening on the port ${port}`);
@@ -25,7 +27,6 @@ export const startServer = async () => {
     console.error('Error starting the server:', error);
     process.exit(1);
   }
-
   return app;
 };
 

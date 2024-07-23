@@ -15,11 +15,11 @@ export class Song {
     ReleaseDate: string;
 
     @ManyToOne(() => Author, author => author.AuthorID)
-    AuthorID: Author;
+    Author: Author;
 
     @ManyToOne(() => Composer, composer => composer.ComposerID)
-    ComposerID: Composer;
+    Composer: Composer;
 
     @ManyToOne(() => Performer, performer => performer.PerformerID)
-    PerformerID: Performer;
+    Performer: Performer;
 }

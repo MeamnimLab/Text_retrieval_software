@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { apiService } from '../apiService'; // Adjust the import path accordingly
 
 const UploadSong: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -10,6 +10,8 @@ const UploadSong: React.FC = () => {
   const [performer, setPerformer] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const { postData } = apiService();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -34,19 +36,17 @@ const UploadSong: React.FC = () => {
     formData.append('performer', performer);
 
     try {
-      await axios.post('/api/upload-song', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setSuccess('Song uploaded successfully!');
-      setError(null);
-      setFile(null);
-      setTitle('');
-      setReleaseDate('');
-      setAuthor('');
-      setComposer('');
-      setPerformer('');
+      const response = await postData('api/songs/upload', formData)
+      if (response) {
+        setSuccess('Song uploaded successfully!');
+        setError(null);
+        setFile(null);
+        setTitle('');
+        setReleaseDate('');
+        setAuthor('');
+        setComposer('');
+        setPerformer('');
+      }
     } catch (err) {
       setError('Failed to upload song.');
       setSuccess(null);
