@@ -1,14 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Song } from './Song';
+import { GroupWords } from './GroupWords.entity';
 
 @Entity()
-export class Author {
+export class Group {
   @PrimaryGeneratedColumn()
-  AuthorID: number;
+  GroupID: number;
 
   @Column({ length: 255 })
-  Name: string;
-
-  @Column('text')
-  Bio: string;
+  GroupName: string;
 }

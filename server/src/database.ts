@@ -3,10 +3,10 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import path from 'path';
 
-const host = 'localhost'; // Replace with your actual host
-const user = 'postgres'; // Replace with your actual username
-const password = 'ch2172003'; // Replace with your actual password
-const database = 'lycries'; // Replace with your actual database name
+const host = 'localhost'; 
+const user = 'postgres';
+const password = 'ch2172003'; 
+const database = 'lycries'; 
 const logging = true;
 const ssl = false; 
 
