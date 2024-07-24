@@ -7,7 +7,7 @@ const host = 'localhost';
 const user = 'postgres';
 const password = 'ch2172003'; 
 const database = 'lycries'; 
-const logging = true;
+const logging = false;
 const ssl = false; 
 
 export class Database {

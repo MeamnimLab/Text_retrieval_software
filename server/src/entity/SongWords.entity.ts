@@ -8,7 +8,7 @@ export class SongWords {
     SongWordsID: number;
 
     @ManyToOne(() => Song, song => song.SongID)
-    SongID: Song;
+    SongID: Number;
 
     @ManyToOne(() => Word, word => word.WordID)
     WordID: Word;
