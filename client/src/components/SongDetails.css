@@ -1,10 +1,46 @@
+.song-detail {
+  text-align: center;
+  background-color: #fff;
+  color: #000;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  position: relative; /* Ensures that the buttons can be positioned correctly */
+}
+
+.song-title {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
 .song-words {
-    margin-top: 10px;
-  }
-  .song-words div {
-    margin-bottom: 5px;
-  }
-  .song-words span {
-    margin-right: 5px;
-  }
-  
+  margin-top: 20px;
+  text-align: left;
+}
+
+.song-line {
+  margin-bottom: 10px;
+}
+
+.song-actions {
+  margin-top: 20px;
+}
+
+.play-button, .stop-button {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.voice-select {
+  margin: 5px;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}

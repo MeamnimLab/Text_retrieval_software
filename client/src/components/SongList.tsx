@@ -5,9 +5,10 @@ import { SongDTO } from '../../../types/songDTO';
 
 const SongList: React.FC = () => {
   const [songs, setSongs] = useState<SongDTO[]>([]);
-  const [openedSongIDs, setOpenedSongIDs] = useState<Set<number>>(new Set());
+  const [openedSongID, setOpenedSongID] = useState<number | null>(null);
   const [filterType, setFilterType] = useState<string>('Title');
   const [filterValue, setFilterValue] = useState<string>('');
+  const [playingSongID, setPlayingSongID] = useState<number | null>(null);
   const { getData } = apiService();
 
   useEffect(() => {
@@ -21,18 +22,20 @@ const SongList: React.FC = () => {
     };
 
     fetchSongs();
-  }, []);
+  }, [getData]);
 
-  const handleButtonClick = (songID: number) => {
-    setOpenedSongIDs(prevOpenedSongIDs => {
-      const newOpenedSongIDs = new Set(prevOpenedSongIDs);
-      if (newOpenedSongIDs.has(songID)) {
-        newOpenedSongIDs.delete(songID); // Close song
-      } else {
-        newOpenedSongIDs.add(songID); // Open song
-      }
-      return newOpenedSongIDs;
-    });
+  const handleSongClick = (songID: number) => {
+    setOpenedSongID(prevOpenedSongID => 
+      prevOpenedSongID === songID ? null : songID
+    );
+  };
+
+  const handlePlay = (songID: number) => {
+    setPlayingSongID(songID);
+  };
+
+  const handleStop = () => {
+    setPlayingSongID(null);
   };
 
   const filteredSongs = songs.filter(song => {
@@ -54,10 +57,14 @@ const SongList: React.FC = () => {
   });
 
   return (
-    <div>
-      <h1>Song List</h1>
-      <div>
-        <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+    <div style={{ padding: '20px', backgroundColor: '#fff', color: '#000' }}>
+      <h1 style={{ textAlign: 'center', color: '#000' }}>Song List</h1>
+      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center', gap: '20px' }}>
+        <select 
+          value={filterType} 
+          onChange={(e) => setFilterType(e.target.value)}
+          style={{ padding: '10px', borderRadius: '4px', border: '1px solid #000', backgroundColor: '#fff', color: '#000' }}
+        >
           <option value="Title">Title</option>
           <option value="Author">Author</option>
           <option value="Composer">Composer</option>
@@ -69,18 +76,42 @@ const SongList: React.FC = () => {
           value={filterValue}
           onChange={(e) => setFilterValue(e.target.value)}
           placeholder={`Filter by ${filterType}`}
+          style={{ padding: '10px', borderRadius: '4px', border: '1px solid #000', backgroundColor: '#fff', color: '#000', width: '300px' }}
         />
       </div>
-      <ul>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
         {filteredSongs.map(song => (
-          <li key={song.SongID}>
-            <button onClick={() => handleButtonClick(song.SongID)}>
+          <div 
+            key={song.SongID}
+            style={{
+              width: '400px',
+              border: '1px solid #000',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              backgroundColor: '#fff',
+            }}
+          >
+            <div 
+              style={{ padding: '10px', backgroundColor: '#000', color: '#fff', textAlign: 'center', fontWeight: 'bold', cursor: 'pointer' }}
+              onClick={() => handleSongClick(song.SongID)}
+            >
               {song.Title}
-            </button>
-            {openedSongIDs.has(song.SongID) && <SongDetail song={song} filterValue={filterValue} filterType={filterType} />}
-          </li>
+            </div>
+            {openedSongID === song.SongID && (
+              <div style={{ padding: '10px' }}>
+                <SongDetail 
+                  song={song} 
+                  filterValue={filterValue} 
+                  filterType={filterType} 
+                  isCurrentlyPlaying={playingSongID === song.SongID}
+                  onPlay={() => handlePlay(song.SongID)}
+                  onStop={handleStop}
+                />
+              </div>
+            )}
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

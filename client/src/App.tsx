@@ -6,6 +6,8 @@ import UploadSong from './components/UploadSong';
 import SongList from './components/SongList';
 import CreateGroup from './components/CreateGroup';
 import AddWordToGroup from './components/AddWordToGroup';
+import CreateExpression from './components/CreateExpression';
+
 
 const App: React.FC = () => (
   <BrowserRouter>
@@ -15,6 +17,8 @@ const App: React.FC = () => (
       <Route path="/songList" element={<SongList/>} />
       <Route path="/createGroup" element={<CreateGroup/>} />
       <Route path="/addWords" element={<AddWordToGroup/>} />
+      <Route path="/CreateExpression" element={<CreateExpression/>} />
+
 
 
 
