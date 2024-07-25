@@ -1,6 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../apiService';
 import { Word, Group } from '../../../types/songDTO';
+import { Container, Typography, Box, MenuItem, Select, Button, TextField } from '@mui/material';
+import { styled } from '@mui/system';
+
+// Styled components
+const StyledContainer = styled(Container)({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100vh',
+  backgroundColor: '#fff',
+  padding: '2rem',
+});
+
+const StyledBox = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+  maxWidth: '600px',
+});
+
+const StyledButton = styled(Button)({
+  backgroundColor: '#00CED1',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: '#FF69B4',
+  },
+  marginTop: '1rem',
+});
+
+const StyledSelect = styled(Select)({
+  marginTop: '1rem',
+  width: '100%',
+});
+
+const StyledTextField = styled(TextField)({
+  marginTop: '1rem',
+  width: '100%',
+});
 
 const AddWordToGroup: React.FC = () => {
     const [groups, setGroups] = useState<Group[]>([]);
@@ -13,10 +52,10 @@ const AddWordToGroup: React.FC = () => {
     useEffect(() => {
         const fetchGroupsAndWords = async () => {
             try {
-               const groupsResponse =  await getData('api/groups')
-               const wordsResponse =  await getData('api/words')
-                setGroups(groupsResponse?.data );
-                setWords(wordsResponse?.data );
+                const groupsResponse = await getData('api/groups');
+                const wordsResponse = await getData('api/words');
+                setGroups(groupsResponse?.data);
+                setWords(wordsResponse?.data);
             } catch (error) {
                 console.error('Error fetching groups and words:', error);
             }
@@ -60,41 +99,53 @@ const AddWordToGroup: React.FC = () => {
     };
 
     return (
-        <div>
-            <h2>Add Word to Group</h2>
-            <div>
-                <label>Select Group: </label>
-                <select onChange={(e) => setSelectedGroupID(Number(e.target.value))} defaultValue="">
-                    <option value="" disabled>Select a group</option>
+        <StyledContainer>
+            <Typography variant="h4" gutterBottom style={{ color: '#00CED1' }}>
+                Add Word to Group
+            </Typography>
+            <StyledBox>
+                <Typography variant="h6" style={{ color: '#FF69B4' }}>Select Group</Typography>
+                <StyledSelect
+                    value={selectedGroupID ?? ''}
+                    onChange={(e) => setSelectedGroupID(Number(e.target.value))}
+                    displayEmpty
+                >
+                    <MenuItem value="" disabled>Select a group</MenuItem>
                     {groups.map(group => (
-                        <option key={group.GroupID} value={group.GroupID}>{group.GroupName}</option>
+                        <MenuItem key={group.GroupID} value={group.GroupID}>
+                            {group.GroupName}
+                        </MenuItem>
                     ))}
-                </select>
-            </div>
-            <div>
-                <label>Select Word: </label>
-                <select onChange={(e) => setSelectedWordID(Number(e.target.value))} defaultValue="">
-                    <option value="" disabled>Select a word</option>
+                </StyledSelect>
+
+                <Typography variant="h6" style={{ color: '#FF69B4', marginTop: '1rem' }}>Select Word</Typography>
+                <StyledSelect
+                    value={selectedWordID ?? ''}
+                    onChange={(e) => setSelectedWordID(Number(e.target.value))}
+                    displayEmpty
+                >
+                    <MenuItem value="" disabled>Select a word</MenuItem>
                     {words.map(word => (
-                        <option key={word.WordID} value={word.WordID}>{word.WordText}</option>
+                        <MenuItem key={word.WordID} value={word.WordID}>
+                            {word.WordText}
+                        </MenuItem>
                     ))}
-                </select>
-                <button onClick={handleAddWord}>Add Word</button>
-            </div>
-            <div>
-                <h3>Or Enter Word Text</h3>
+                </StyledSelect>
+                <StyledButton onClick={handleAddWord}>Add Word</StyledButton>
+
+                <Typography variant="h6" style={{ color: '#FF69B4', marginTop: '1rem' }}>Or Enter Word Text</Typography>
                 <form onSubmit={handleWordTextSubmit}>
-                    <input
-                        type="text"
+                    <StyledTextField
+                        label="Enter word text"
+                        variant="outlined"
                         value={wordText}
                         onChange={(e) => setWordText(e.target.value)}
-                        placeholder="Enter word text"
                         required
                     />
-                    <button type="submit">Add Word by Text</button>
+                    <StyledButton type="submit">Add Word by Text</StyledButton>
                 </form>
-            </div>
-        </div>
+            </StyledBox>
+        </StyledContainer>
     );
 };
 

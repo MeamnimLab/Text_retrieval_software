@@ -1,13 +1,19 @@
 import React from 'react';
-import UploadSong from './UploadSong';
 import { Link } from 'react-router-dom';
+import './Home.css';
 
 const Home = () => (
-  <div>
-    <h1>Welcome to the Music App</h1>
-    <Link to={'/uploadSong'}>
-    <div>upload song</div>
-    </Link>
+  <div className="home">
+    <h1 className="title">Welcome to the Music App</h1>
+    <p className="subtitle" style={{fontFamily: 'Pacifico, cursive'}}>Enjoy your music experience with us!</p>
+    <div className="animations">
+      <div className="note-animation">♪</div>
+      <div className="note-animation">♫</div>
+      <div className="note-animation">♬</div>
+      <div className="note-animation">♪</div>
+      <div className="note-animation">♫</div>
+  
+    </div>
   </div>
 );
 

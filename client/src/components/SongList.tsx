@@ -2,7 +2,67 @@ import React, { useState, useEffect } from 'react';
 import SongDetail from './SongDetails';
 import { apiService } from '../apiService'; 
 import { SongDTO } from '../../../types/songDTO';
+import { Button, Container, Typography, Box, TextField, Select, MenuItem } from '@mui/material';
+import { styled } from '@mui/system';
 
+// Styled components
+const StyledContainer = styled(Container)({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  padding: '20px',
+  backgroundColor: '#fff',
+  color: '#000',
+});
+
+const StyledSongCard = styled(Box)({
+  width: '100%',
+  maxWidth: '400px',
+  border: '1px solid #00CED1',
+  borderRadius: '8px',
+  overflow: 'hidden',
+  marginBottom: '20px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+});
+
+const SongTitle = styled(Box)({
+  width: '100%',
+  padding: '20px',
+  backgroundColor: '#00CED1',
+  color: '#fff',
+  textAlign: 'center',
+  fontWeight: 'bold',
+  cursor: 'pointer',
+  fontSize: '1.2rem',
+});
+
+const FilterContainer = styled(Box)({
+  marginBottom: '20px',
+  display: 'flex',
+  justifyContent: 'center',
+  gap: '20px',
+  width: '100%',
+  maxWidth: '600px',
+});
+
+const FilterInput = styled(TextField)({
+  backgroundColor: '#fff',
+  color: '#000',
+  flex: 1,
+});
+
+const PlayButton = styled(Button)({
+  backgroundColor: '#00CED1',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: '#FF69B4',
+  },
+  marginTop: '1rem',
+});
+
+// Component
 const SongList: React.FC = () => {
   const [songs, setSongs] = useState<SongDTO[]>([]);
   const [openedSongID, setOpenedSongID] = useState<number | null>(null);
@@ -34,10 +94,6 @@ const SongList: React.FC = () => {
     setPlayingSongID(songID);
   };
 
-  const handleStop = () => {
-    setPlayingSongID(null);
-  };
-
   const filteredSongs = songs.filter(song => {
     if (!filterValue) return true;
     switch (filterType) {
@@ -57,62 +113,50 @@ const SongList: React.FC = () => {
   });
 
   return (
-    <div style={{ padding: '20px', backgroundColor: '#fff', color: '#000' }}>
-      <h1 style={{ textAlign: 'center', color: '#000' }}>Song List</h1>
-      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center', gap: '20px' }}>
-        <select 
-          value={filterType} 
+    <StyledContainer>
+      <Typography variant="h4" gutterBottom style={{ textAlign: 'center', color: '#00CED1',fontFamily: 'Pacifico, cursive',marginTop:"16px" }}>
+        Song List
+      </Typography>
+      <FilterContainer>
+        <Select
+          value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          style={{ padding: '10px', borderRadius: '4px', border: '1px solid #000', backgroundColor: '#fff', color: '#000' }}
+          style={{ backgroundColor: '#fff', color: '#000', flex: '1' }}
         >
-          <option value="Title">Title</option>
-          <option value="Author">Author</option>
-          <option value="Composer">Composer</option>
-          <option value="Performer">Performer</option>
-          <option value="WordText">Word Text</option>
-        </select>
-        <input
-          type="text"
+          <MenuItem value="Title">Title</MenuItem>
+          <MenuItem value="Author">Author</MenuItem>
+          <MenuItem value="Composer">Composer</MenuItem>
+          <MenuItem value="Performer">Performer</MenuItem>
+          <MenuItem value="WordText">Word Text</MenuItem>
+        </Select>
+        <FilterInput
           value={filterValue}
           onChange={(e) => setFilterValue(e.target.value)}
           placeholder={`Filter by ${filterType}`}
-          style={{ padding: '10px', borderRadius: '4px', border: '1px solid #000', backgroundColor: '#fff', color: '#000', width: '300px' }}
+          variant="outlined"
         />
-      </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+      </FilterContainer>
+      <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
         {filteredSongs.map(song => (
-          <div 
-            key={song.SongID}
-            style={{
-              width: '400px',
-              border: '1px solid #000',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              backgroundColor: '#fff',
-            }}
-          >
-            <div 
-              style={{ padding: '10px', backgroundColor: '#000', color: '#fff', textAlign: 'center', fontWeight: 'bold', cursor: 'pointer' }}
-              onClick={() => handleSongClick(song.SongID)}
-            >
+          <StyledSongCard key={song.SongID}>
+            <SongTitle onClick={() => handleSongClick(song.SongID)}>
               {song.Title}
-            </div>
+            </SongTitle>
             {openedSongID === song.SongID && (
-              <div style={{ padding: '10px' }}>
+              <Box style={{ padding: '10px', width: '100%' }}>
                 <SongDetail 
                   song={song} 
                   filterValue={filterValue} 
                   filterType={filterType} 
                   isCurrentlyPlaying={playingSongID === song.SongID}
                   onPlay={() => handlePlay(song.SongID)}
-                  onStop={handleStop}
                 />
-              </div>
+              </Box>
             )}
-          </div>
+          </StyledSongCard>
         ))}
-      </div>
-    </div>
+      </Box>
+    </StyledContainer>
   );
 };
 

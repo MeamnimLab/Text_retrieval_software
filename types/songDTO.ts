@@ -15,6 +15,7 @@ export interface SongDTO {
   }
 
   export interface Group {
+    wordName: any;
     GroupID: number;
     GroupName: string;
 }
@@ -22,4 +23,9 @@ export interface SongDTO {
 export interface Word {
   WordID: number;
   WordText: string;
+}
+
+export interface WordInGroup {
+  groupName: string;
+  wordName: string[];
 }

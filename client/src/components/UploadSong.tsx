@@ -1,5 +1,49 @@
 import React, { useState } from 'react';
+import { Button, TextField, Typography, Container, Box, Paper } from '@mui/material';
 import { apiService } from '../apiService'; 
+import { styled } from '@mui/system';
+import './UploadSong.css'; // Assuming you have CSS for background image
+
+const StyledContainer = styled(Container)({
+  height: '100vh',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  color: '#000',
+  position: 'relative',
+  backgroundColor: '#fff',
+  overflow: 'hidden'
+});
+
+const StyledPaper = styled(Paper)({
+  padding: '20px',
+  maxWidth: '600px',
+  width: '100%',
+  backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  borderRadius: '8px',
+  zIndex: 2
+});
+
+const StyledButton = styled(Button)({
+  backgroundColor: '#00CED1',
+  '&:hover': {
+    backgroundColor: '#FF69B4'
+  }
+});
+
+const Title = styled(Typography)({
+  fontFamily: 'Pacifico, cursive',
+  fontSize: '2.5rem',
+  color: '#00CED1',
+  textAlign: 'center'
+});
+
+const Note = styled('div')({
+  position: 'absolute',
+  fontSize: '2rem',
+  color: '#FF69B4',
+  animation: 'float 10s infinite linear'
+});
 
 const UploadSong: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -53,64 +97,100 @@ const UploadSong: React.FC = () => {
     }
   };
 
+  const renderNotes = () => {
+    const notes = ['♪', '♫', '♬', '♩'];
+    const noteElements = notes.map((note, index) => (
+      <Note key={index} style={{ left: `${Math.random() * 100}%`, animationDuration: `${5 + Math.random() * 5}s` }}>
+        {note}
+      </Note>
+    ));
+    return noteElements;
+  };
+
   return (
-    <div>
-      <h2>Upload Song</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="file">Select song file:</label>
-          <input type="file" id="file" accept=".txt" onChange={handleFileChange} />
-        </div>
-        <div>
-          <label htmlFor="title">Title:</label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="releaseDate">Release Date:</label>
-          <input
-            type="date"
-            id="releaseDate"
-            value={releaseDate}
-            onChange={(e) => setReleaseDate(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="author">Author:</label>
-          <input
-            type="text"
-            id="author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="composer">Composer:</label>
-          <input
-            type="text"
-            id="composer"
-            value={composer}
-            onChange={(e) => setComposer(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="performer">Performer:</label>
-          <input
-            type="text"
-            id="performer"
-            value={performer}
-            onChange={(e) => setPerformer(e.target.value)}
-          />
-        </div>
-        <button type="submit">Upload Song</button>
-      </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
-    </div>
+    <StyledContainer>
+      {renderNotes()}
+      <StyledPaper>
+        <Title variant="h4" gutterBottom>
+          Upload Song
+        </Title>
+        <form onSubmit={handleSubmit}>
+          <Box marginBottom={2}>
+            <input
+              type="file"
+              id="file"
+              accept=".txt"
+              onChange={handleFileChange}
+              style={{ display: 'block', marginBottom: '10px', color: '#000' }}
+            />
+          </Box>
+          <Box marginBottom={2}>
+            <TextField
+              fullWidth
+              label="Title"
+              variant="outlined"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              InputLabelProps={{ style: { color: '#000' } }}
+              InputProps={{ style: { color: '#000' } }}
+            />
+          </Box>
+          <Box marginBottom={2}>
+            <TextField
+              fullWidth
+              type="date"
+              label="Release Date"
+              InputLabelProps={{ shrink: true, style: { color: '#000' } }}
+              InputProps={{ style: { color: '#000' } }}
+              value={releaseDate}
+              onChange={(e) => setReleaseDate(e.target.value)}
+            />
+          </Box>
+          <Box marginBottom={2}>
+            <TextField
+              fullWidth
+              label="Author"
+              variant="outlined"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              InputLabelProps={{ style: { color: '#000' } }}
+              InputProps={{ style: { color: '#000' } }}
+            />
+          </Box>
+          <Box marginBottom={2}>
+            <TextField
+              fullWidth
+              label="Composer"
+              variant="outlined"
+              value={composer}
+              onChange={(e) => setComposer(e.target.value)}
+              InputLabelProps={{ style: { color: '#000' } }}
+              InputProps={{ style: { color: '#000' } }}
+            />
+          </Box>
+          <Box marginBottom={2}>
+            <TextField
+              fullWidth
+              label="Performer"
+              variant="outlined"
+              value={performer}
+              onChange={(e) => setPerformer(e.target.value)}
+              InputLabelProps={{ style: { color: '#000' } }}
+              InputProps={{ style: { color: '#000' } }}
+            />
+          </Box>
+          <StyledButton
+            type="submit"
+            variant="contained"
+            fullWidth
+          >
+            Upload Song
+          </StyledButton>
+        </form>
+        {error && <Typography color="error">{error}</Typography>}
+        {success && <Typography color="success">{success}</Typography>}
+      </StyledPaper>
+    </StyledContainer>
   );
 };
 

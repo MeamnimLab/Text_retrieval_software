@@ -1,21 +1,81 @@
 import React, { useState, useEffect } from 'react';
 import { SongDTO } from '../../../types/songDTO';
-import { FaVolumeUp, FaStop } from 'react-icons/fa';
-import "./SongDetails.css";
+import { FaVolumeUp } from 'react-icons/fa';
+import { Button, Select, MenuItem, Box, Typography, SelectChangeEvent } from '@mui/material';
+import { styled } from '@mui/system';
 
+// Styled components
+const SongDetailContainer = styled(Box)({
+  padding: '30px', 
+  backgroundColor: '#fff',
+  color: '#000',
+  maxWidth: '800px', 
+  margin: '0 auto', 
+  textAlign: 'center',
+});
+
+const SongTitle = styled(Typography)({
+  fontWeight: 'bold',
+  marginBottom: '15px',
+  color: '#00CED1',
+  fontSize: '1.8rem',
+});
+
+const SongActions = styled(Box)({
+  marginTop: '30px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '15px',
+});
+
+const PlayButton = styled(Button)({
+  backgroundColor: '#00CED1',
+  color: '#fff',
+  padding: '10px 20px',
+  '&:hover': {
+    backgroundColor: '#FF69B4',
+  },
+});
+
+const StatisticsContainer = styled(Box)({
+  marginTop: '20px',
+  padding: '20px',
+  backgroundColor: '#f1f1f1',
+  borderRadius: '8px',
+  textAlign: 'left',
+});
+
+const StatItem = styled(Typography)({
+  marginBottom: '10px',
+  color: '#333',
+});
+
+const ToggleStatsButton = styled(Button)({
+  backgroundColor: '#00CED1',
+  color: '#fff',
+  padding: '16px',
+  marginTop: '20px',
+  '&:hover': {
+    backgroundColor: '#FF69B4',
+  },
+});
+
+// TypeScript interface for props
 interface SongDetailProps {
   song: SongDTO;
   filterValue: string;
   filterType: string;
   isCurrentlyPlaying: boolean;
   onPlay: () => void;
-  onStop: () => void;
 }
 
-const SongDetail: React.FC<SongDetailProps> = ({ song, filterValue, filterType, isCurrentlyPlaying, onPlay, onStop }) => {
+// Component
+const SongDetail: React.FC<SongDetailProps> = ({ song, filterValue, filterType, isCurrentlyPlaying, onPlay }) => {
   const [isSpeaking, setIsSpeaking] = useState(isCurrentlyPlaying);
-  const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
+  const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(window.speechSynthesis.getVoices()[0]);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [showStatistics, setShowStatistics] = useState(false);
 
   useEffect(() => {
     const updateVoices = () => {
@@ -63,7 +123,6 @@ const SongDetail: React.FC<SongDetailProps> = ({ song, filterValue, filterType, 
     };
     utterance.onend = () => {
       setIsSpeaking(false);
-      onStop();
     };
 
     window.speechSynthesis.speak(utterance);
@@ -73,48 +132,67 @@ const SongDetail: React.FC<SongDetailProps> = ({ song, filterValue, filterType, 
     if (isSpeaking) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
-      onStop();
     }
   };
 
-  const handleVoiceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleVoiceChange = (event: SelectChangeEvent<string>) => {
     const selectedVoiceName = event.target.value;
     const voice = voices.find(v => v.name === selectedVoiceName);
     setSelectedVoice(voice || null);
   };
 
+  // Calculate word statistics
+  const wordCounts = Object.values(groupedWords).map(line => line.length);
+  const totalWords = wordCounts.reduce((sum, count) => sum + count, 0);
+
   return (
-    <div className='song-detail'>
-      <h2 className='song-title'>{song.Title}</h2>
-      <p><strong>Author:</strong> {song.Author}</p>
-      <p><strong>Composer:</strong> {song.Composer}</p>
-      <p><strong>Performer:</strong> {song.Performer}</p>
-      <div className='song-words'>
+    <SongDetailContainer>
+      <SongTitle variant="h4">{song.Title}</SongTitle>
+      <Typography variant="h6"><strong>Author:</strong> {song.Author}</Typography>
+      <Typography variant="h6"><strong>Composer:</strong> {song.Composer}</Typography>
+      <Typography variant="h6"><strong>Performer:</strong> {song.Performer}</Typography>
+      <Box className='song-words'>
         {Object.keys(groupedWords).map(lineNumber => (
-          <div key={lineNumber} className='song-line'>
+          <Box key={lineNumber} className='song-line'>
             {groupedWords[Number(lineNumber)].map((word, index) => (
               <span
                 key={index}
                 dangerouslySetInnerHTML={{ __html: highlightText(word + ' ') }}
               />
             ))}
-          </div>
+          </Box>
         ))}
-      </div>
-      <div className='song-actions'>
-        <select onChange={handleVoiceChange} className='voice-select'>
-          <option value="">Select Voice</option>
-          {voices.map((voice) => (
-            <option key={voice.name} value={voice.name}>
-              {voice.name} ({voice.lang})
-            </option>
+      </Box>
+      {showStatistics && (
+        <StatisticsContainer>
+          <StatItem><strong>Total Words:</strong> {totalWords}</StatItem>
+          {wordCounts.map((count, index) => (
+            <StatItem key={index}><strong>Line {index + 1}:</strong> {count} words</StatItem>
           ))}
-        </select>
-        <button onClick={isSpeaking ? stopSpeech : readLyrics} className='play-button'>
-          {isSpeaking ? <FaStop /> : <FaVolumeUp />} {isSpeaking ? 'Stop Reading' : 'Read Lyrics'}
-        </button>
-      </div>
-    </div>
+        </StatisticsContainer>
+      )}
+      <SongActions>
+        <Select 
+          onChange={handleVoiceChange} 
+          value={selectedVoice?.name || ''}
+          className='voice-select'
+          sx={{ marginBottom: '15px' }}
+        >
+          <MenuItem value="">Select Voice</MenuItem>
+          {voices.map((voice) => (
+            <MenuItem key={voice.name} value={voice.name}>
+              {voice.name} ({voice.lang})
+            </MenuItem>
+          ))}
+        </Select>
+        <PlayButton onClick={isSpeaking ? stopSpeech : readLyrics}>
+          <FaVolumeUp /> {isSpeaking ? 'Stop Reading' : 'Read Lyrics'}
+        </PlayButton>
+      </SongActions>
+      <ToggleStatsButton onClick={() => setShowStatistics(!showStatistics)}>
+        {showStatistics ? 'Hide Statistical Analyses' : 'Show Statistical Analyses'}
+      </ToggleStatsButton>
+    </SongDetailContainer>
   );
 };
 
