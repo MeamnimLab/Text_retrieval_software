@@ -26,6 +26,7 @@ export interface Word {
 }
 
 export interface WordInGroup {
+  groupID:string;
   groupName: string;
   wordName: string[];
 }

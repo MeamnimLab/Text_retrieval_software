@@ -1,4 +1,4 @@
-import { addWordToGroup, createGroup, getAllGroups, getAllGroupsWithWords } from '../controller/group.controller';
+import { addWordToGroup, createGroup, getAllGroups, getAllGroupsWithWords, getWordIndicesByGroup } from '../controller/group.controller';
 import { Router } from 'express';
 
 
@@ -49,6 +49,19 @@ router.get('/groupWithWords', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
+router.get('/:groupID/wordIndices', async (req, res) => {
+    try {
+        const { groupID } = req.params;
+        const groups = await getWordIndicesByGroup(groupID);
+        res.json(groups);
+    } catch (error) {
+        console.error('Error fetching groups:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
 
 
 export default router;

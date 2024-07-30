@@ -9,6 +9,7 @@ import AddWordToGroup from './components/AddWordToGroup';
 import CreateExpression from './components/CreateExpression';
 import Header from './components/Header';
 import GroupList from './components/GroupList';
+import WordIndicesReport from './components/WordIndicesReport';
 
 
 const App: React.FC = () => (
@@ -24,6 +25,8 @@ const App: React.FC = () => (
           <Route path="/addWords" element={<AddWordToGroup />} />
           <Route path="/CreateExpression" element={<CreateExpression />} />
           <Route path="/groupList" element={<GroupList />} />
+          <Route path="/index" element={<WordIndicesReport />} />
+
 
         </Routes>
       </div>

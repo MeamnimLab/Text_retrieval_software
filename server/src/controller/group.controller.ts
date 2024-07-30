@@ -5,6 +5,8 @@ import { Database } from '../database';
 import { Group } from '../entity/Group.entity';
 import { GroupWords } from '../entity/GroupWords.entity';
 import { WordInGroup } from '../../../types/songDTO';
+import { SongWords } from '../entity/SongWords.entity';
+import { In } from 'typeorm';
 
 
 export const createGroup = async (body) => {
@@ -66,6 +68,7 @@ const groups:Group[] = await groupRepo.find()
     const words = wordInGroups.map(sw => (sw.Word.WordText));
 
     const wordsDto:WordInGroup = {
+      groupID:group.GroupID+"",
       wordName: words,
       groupName: group.GroupName
     }
@@ -74,3 +77,58 @@ const groups:Group[] = await groupRepo.find()
   }
   return result
 }
+
+export const getWordIndices = async () => {
+  
+      const database: Database = await Database.getInstance();
+      const songWordsRepo = await database.getRepository(SongWords);
+
+      // Fetch all words with their indices
+      const wordIndices = await songWordsRepo.find({ relations: ['WordID'] });
+
+      // Group indices by word
+      const wordMap = wordIndices.reduce((map, songWord) => {
+          const wordText = songWord.WordID.WordText;
+          if (!map[wordText]) {
+              map[wordText] = [];
+          }
+          map[wordText].push({ Line: songWord.Line, WordIndex: songWord.WordIndex });
+          return map;
+      }, {});
+return wordMap
+};
+
+
+export const getWordIndicesByGroup = async (groupID:string) => {
+  
+  const database: Database = await Database.getInstance();
+  const songWordsRepo = await database.getRepository(SongWords);
+    const groupWordsRepo = await database.getRepository(GroupWords);
+    
+    // Fetch all words in the given group
+    const groupWords = await groupWordsRepo.find({
+      where: { GroupID: +groupID },
+      relations: ['Word']
+    });
+
+    // Extract word IDs from the group
+    const wordIDs = groupWords.map(groupWord => groupWord.WordID);
+
+    // Fetch all SongWords entries for these word IDs
+    const songWords = await songWordsRepo.find({
+      where: { WordID: In(wordIDs) },
+      relations: ['WordID']
+    });
+
+    // Group indices by word
+    const wordIndicesMap = songWords.reduce((map, songWord) => {
+      const wordText = songWord.WordID.WordText;
+      if (!map[wordText]) {
+        map[wordText] = [];
+      }
+      map[wordText].push({ Line: songWord.Line, WordIndex: songWord.WordIndex });
+      return map;
+    }, {});
+
+    return wordIndicesMap;
+};

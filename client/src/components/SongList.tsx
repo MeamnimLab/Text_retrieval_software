@@ -4,6 +4,8 @@ import { apiService } from '../apiService';
 import { SongDTO } from '../../../types/songDTO';
 import { Button, Container, Typography, Box, TextField, Select, MenuItem } from '@mui/material';
 import { styled } from '@mui/system';
+import { saveAs } from 'file-saver';
+import { parse } from 'js2xmlparser';
 
 // Styled components
 const StyledContainer = styled(Container)({
@@ -62,6 +64,15 @@ const PlayButton = styled(Button)({
   marginTop: '1rem',
 });
 
+const DownloadButton = styled(Button)({
+  backgroundColor: '#FF69B4',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: '#FF1493',
+  },
+  marginTop: '1rem',
+});
+
 // Component
 const SongList: React.FC = () => {
   const [songs, setSongs] = useState<SongDTO[]>([]);
@@ -75,7 +86,11 @@ const SongList: React.FC = () => {
     const fetchSongs = async () => {
       try {
         const response = await getData('api/songs/getAllSongs');
-        setSongs(response?.data);
+        if (response?.data) {
+          setSongs(response.data);
+        } else {
+          console.error('No data received');
+        }
       } catch (error) {
         console.error('Error fetching songs:', error);
       }
@@ -92,6 +107,21 @@ const SongList: React.FC = () => {
 
   const handlePlay = (songID: number) => {
     setPlayingSongID(songID);
+  };
+
+  const handleDownload = (song: SongDTO) => {
+    try {
+      // Convert the song data to XML
+      const xml = parse("Song", song);
+
+      // Create a Blob from the XML string
+      const blob = new Blob([xml], { type: 'application/xml' });
+
+      // Use FileSaver to save the file
+      saveAs(blob, `${song.Title}.xml`);
+    } catch (error) {
+      console.error('Error downloading the file:', error);
+    }
   };
 
   const filteredSongs = songs.filter(song => {
@@ -114,14 +144,14 @@ const SongList: React.FC = () => {
 
   return (
     <StyledContainer>
-      <Typography variant="h4" gutterBottom style={{ textAlign: 'center', color: '#00CED1',fontFamily: 'Pacifico, cursive',marginTop:"16px" }}>
+      <Typography variant="h4" gutterBottom style={{ textAlign: 'center', color: '#00CED1', fontFamily: 'Pacifico, cursive', marginTop: "16px" }}>
         Song List
       </Typography>
       <FilterContainer>
         <Select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          style={{ backgroundColor: '#fff', color: '#000', flex: '1' }}
+          style={{ backgroundColor: '#fff', color: '#000', flex: 1 }}
         >
           <MenuItem value="Title">Title</MenuItem>
           <MenuItem value="Author">Author</MenuItem>
@@ -153,6 +183,9 @@ const SongList: React.FC = () => {
                 />
               </Box>
             )}
+            <DownloadButton onClick={() => handleDownload(song)}>
+              Download as XML
+            </DownloadButton>
           </StyledSongCard>
         ))}
       </Box>
