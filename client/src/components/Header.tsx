@@ -30,7 +30,6 @@ const Header: React.FC = () => {
         <StyledButton href="/songList">Song List</StyledButton>
         <StyledButton href="/createGroup">Create Group</StyledButton>
         <StyledButton href="/addWords">Words group</StyledButton>
-        <StyledButton href="/CreateExpression">Create Expression</StyledButton>
         <StyledButton href="/index">Word Indices</StyledButton>
 
       </StyledToolbar>
